@@ -19,6 +19,25 @@ class Integer
       exponent = exponent >> 1
       base = base*base%modulus
     end 
-  result
-  end 
+    result
+  end
+
+  def extended_gcd(b)
+    a = self
+    last_remainder, remainder = a.abs, b.abs
+    x, last_x, y, last_y = 0, 1, 1, 0
+    while remainder != 0
+      last_remainder, (quotient, remainder) = remainder, last_remainder.divmod(remainder)
+      x, last_x = last_x - quotient*x, x
+      y, last_y = last_y - quotient*y, y
+    end
+  
+    return last_remainder, last_x * (a < 0 ? -1 : 1)
+  end
+  
+  def invmod(et)
+    g, x = extended_gcd(et)
+    raise "The maths are broken!" unless g == 1
+    x % et
+  end
 end

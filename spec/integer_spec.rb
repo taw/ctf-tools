@@ -7,4 +7,9 @@ describe Integer do
   it "#powmod" do
     expect(1234.powmod(5678, 9012)).to eq((1234 ** 5678) % 9012)
   end
+
+  it "#invmod" do
+    expect(42.invmod(2017)).to eq(1969)
+    expect((42*1969) % 2017).to eq(1)
+  end
 end
