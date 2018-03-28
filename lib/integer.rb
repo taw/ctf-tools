@@ -9,4 +9,16 @@ class Integer
     end
     out.pack("C*").reverse
   end
+
+  def powmod(exponent, modulus)
+    return 0 if modulus == 1
+    result = 1 
+    base = self % modulus
+    while exponent > 0 
+      result = result*base%modulus if exponent%2 == 1
+      exponent = exponent >> 1
+      base = base*base%modulus
+    end 
+  result
+  end 
 end
