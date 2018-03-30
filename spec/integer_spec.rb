@@ -12,4 +12,10 @@ describe Integer do
     expect(42.invmod(2017)).to eq(1969)
     expect((42*1969) % 2017).to eq(1)
   end
+
+  it "#root" do
+    n = 1234567812345678987654321
+    expect((n**7).root(7)).to eq(n)
+    expect((n**7 + 1).root(7)).to eq(nil)
+  end
 end
