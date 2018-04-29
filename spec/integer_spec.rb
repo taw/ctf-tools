@@ -18,4 +18,11 @@ describe Integer do
     expect((n**7).root(7)).to eq(n)
     expect((n**7 + 1).root(7)).to eq(nil)
   end
+
+  it "#root_ceil" do
+    n = 1234567812345678987654321
+    expect((n**7).root_ceil(7)).to eq(n)
+    expect((n**7 - 1).root_ceil(7)).to eq(n)
+    expect((n**7 + 1).root_ceil(7)).to eq(n+1)
+  end
 end
