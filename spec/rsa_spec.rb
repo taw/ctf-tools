@@ -27,4 +27,8 @@ describe RSA do
     expect(c % q).to eq(b)
     expect(0...n).to include(c)
   end
+
+  it "factor_modulus" do
+    expect(RSA.factor_modulus(n: n, e: e, d: d)).to eq([p, q])
+  end
 end
