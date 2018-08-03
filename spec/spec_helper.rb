@@ -1,6 +1,4 @@
-require_relative "../lib/string"
-require_relative "../lib/integer"
-require_relative "../lib/rsa"
+require_relative "../lib/ctf-tools"
 
 RSpec.configure do |config|
   config.define_derived_metadata do |meta|
