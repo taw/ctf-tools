@@ -1,4 +1,5 @@
 require_relative "integer"
-require_relative "string"
-require_relative "rsa"
 require_relative "md4"
+require_relative "rsa"
+require_relative "sha1"
+require_relative "string"

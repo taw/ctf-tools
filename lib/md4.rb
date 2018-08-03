@@ -1,10 +1,9 @@
 class MD4
   class << self
-    def pad_message(message)
-      message = message.b
-      byte_string = message + "\x80".b
-      extra_zeroes = -(message.size + 9) % 64
-      byte_string + "\x00".b * extra_zeroes + [message.size*8].pack("Q<")
+    def padding(message)
+      byte_size = message.bytesize
+      extra_zeroes = -(byte_size + 9) % 64
+      "\x80".b + "\x00".b * extra_zeroes + [byte_size * 8].pack("Q<")
     end
 
     def rotate_left(v, s)
@@ -64,7 +63,7 @@ class MD4
     end
 
     def hexdigest(message)
-      padded = pad_message(message)
+      padded = message.b + padding(message)
       chunks = (0...padded.size).step(64).map{|i| padded[i, 64] }
       state = chunks.reduce(initial_state) do |state, chunk|
         reduce(state, chunk)
