@@ -1,3 +1,4 @@
+require_relative "ecc"
 require_relative "integer"
 require_relative "md4"
 require_relative "rsa"
