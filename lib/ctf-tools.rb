@@ -1,3 +1,4 @@
+require "openssl"
 require_relative "aes"
 require_relative "aes128"
 require_relative "ecc"
