@@ -87,20 +87,20 @@ module AES
     def shift_rows(state)
       raise unless state.size == 16
       [
-        state[ 0], state[ 1], state[ 2], state[ 3],
-        state[ 5], state[ 6], state[ 7], state[ 4],
-        state[10], state[11], state[ 8], state[ 9],
-        state[15], state[12], state[13], state[14],
+        state[ 0], state[ 5], state[10], state[15],
+        state[ 4], state[ 9], state[14], state[ 3],
+        state[ 8], state[13], state[ 2], state[ 7],
+        state[12], state[ 1], state[ 6], state[11],
       ]
     end
 
     def inv_shift_rows(state)
       raise unless state.size == 16
       [
-        state[ 0], state[ 1], state[ 2], state[ 3],
-        state[ 7], state[ 4], state[ 5], state[ 6],
-        state[10], state[11], state[ 8], state[ 9],
-        state[13], state[14], state[15], state[12],
+        state[ 0], state[13], state[10], state[ 7],
+        state[ 4], state[ 1], state[14], state[11],
+        state[ 8], state[ 5], state[ 2], state[15],
+        state[12], state[ 9], state[ 6], state[ 3],
       ]
     end
 
@@ -140,28 +140,22 @@ module AES
 
     def mix_columns(state)
       raise unless state.size == 16
-      result = 16.times.map{ nil }
-      (0..3).each do |i|
-        column = (0..3).map{ |j| state[i + 4*j] }
-        column = mix_column(column)
-        (0..3).each do |j|
-          result[i + 4*j] = column[j]
-        end
-      end
-      result
+      [
+        mix_column(state[0, 4]),
+        mix_column(state[4, 4]),
+        mix_column(state[8, 4]),
+        mix_column(state[12, 4]),
+      ].flatten
     end
 
     def inv_mix_columns(state)
       raise unless state.size == 16
-      result = 16.times.map{ nil }
-      (0..3).each do |i|
-        column = (0..3).map{ |j| state[i + 4*j] }
-        column = inv_mix_column(column)
-        (0..3).each do |j|
-          result[i + 4*j] = column[j]
-        end
-      end
-      result
+      [
+        inv_mix_column(state[0, 4]),
+        inv_mix_column(state[4, 4]),
+        inv_mix_column(state[8, 4]),
+        inv_mix_column(state[12, 4]),
+      ].flatten
     end
 
     def sub_bytes(state)

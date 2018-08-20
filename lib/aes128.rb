@@ -7,9 +7,12 @@ module AES128
       rcon = 1
       10.times do
         w = output[-1]
-        x = [w[1], w[2], w[3], w[0]]
-        y = [ AES::SBOX[x[0]], AES::SBOX[x[1]], AES::SBOX[x[2]], AES::SBOX[x[3]] ]
-        z = [y[0] ^ rcon, y[1], y[2], y[3]]
+        z = [
+          AES::SBOX[w[1]] ^ rcon,
+          AES::SBOX[w[2]],
+          AES::SBOX[w[3]],
+          AES::SBOX[w[0]],
+        ]
         output << xormap(output[-4], z)
         output << xormap(output[-4], output[-1])
         output << xormap(output[-4], output[-1])
@@ -28,51 +31,38 @@ module AES128
       raise unless key.size == 16
       raise unless state.size == 16
 
-      state = AES.transpose4x4(state)
-
       key = expand_key(key)
 
       round_key = key[0, 16]
-      round_key = AES.transpose4x4(round_key)
       state = AES.add_round_key(state, round_key)
 
       (1..9).each do |i|
         round_key = key[16*i, 16]
-        round_key = AES.transpose4x4(round_key)
         state = AES.sub_bytes(state)
         state = AES.shift_rows(state)
         state = AES.mix_columns(state)
         state = AES.add_round_key(state, round_key)
       end
 
-      # Last one without add_round_key
       round_key = key[16*10, 16]
-      round_key = AES.transpose4x4(round_key)
       state = AES.sub_bytes(state)
       state = AES.shift_rows(state)
       state = AES.add_round_key(state, round_key)
-
-      AES.transpose4x4(state)
     end
 
     def decrypt(key, state)
       raise unless key.size == 16
       raise unless state.size == 16
 
-      state = AES.transpose4x4(state)
-
       key = expand_key(key)
 
-      # Last one without add_round_key
       round_key = key[16*10, 16]
-      round_key = AES.transpose4x4(round_key)
       state = AES.inv_add_round_key(state, round_key)
       state = AES.inv_shift_rows(state)
       state = AES.inv_sub_bytes(state)
 
       [*1..9].reverse.each do |i|
         round_key = key[16*i, 16]
-        round_key = AES.transpose4x4(round_key)
         state = AES.inv_add_round_key(state, round_key)
         state = AES.inv_mix_columns(state)
         state = AES.inv_shift_rows(state)
@@ -80,10 +70,7 @@ module AES128
       end
 
       round_key = key[0, 16]
-      round_key = AES.transpose4x4(round_key)
-      state = AES.inv_add_round_key(state, round_key)
-
-      AES.transpose4x4(state)
+      AES.inv_add_round_key(state, round_key)
     end
 
     private def print_state(msg, state)

@@ -41,7 +41,7 @@ describe AES do
 
   describe "shift_rows" do
     let(:state) {
-      [
+      AES.transpose4x4 [
          1,  2,  3,  4,
          5,  6,  7,  8,
          9, 10, 11, 12,
@@ -49,7 +49,7 @@ describe AES do
       ]
     }
     let(:shifted_state) {
-      [
+      AES.transpose4x4 [
          1,  2,  3,  4,
          6,  7,  8,  5,
         11, 12,  9, 10,
@@ -103,7 +103,7 @@ describe AES do
 
   describe "mix_columns" do
     let(:input) {
-      [
+      AES.transpose4x4 [
         0x87, 0xf2, 0x4d, 0x97,
         0x6e, 0x4c, 0x90, 0xec,
         0x46, 0xe7, 0x4a, 0xc3,
@@ -111,7 +111,7 @@ describe AES do
       ]
     }
     let(:output) {
-      [
+      AES.transpose4x4 [
         0x47, 0x40, 0xa3, 0x4c,
         0x37, 0xd4, 0x70, 0x9f,
         0x94, 0xe4, 0x3a, 0x42,
