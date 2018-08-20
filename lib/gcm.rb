@@ -48,17 +48,37 @@ module GCM
     end
 
     def encrypt(key, iv, aad, pt)
+      aad = aad.b
+      pt = pt.b
       zero_block = "\x00".b*16
       h = encrypt_block(key, zero_block).to_hex.to_i(16)
       ivh = encrypt_block(key, counter_block(iv, 1)).to_hex.to_i(16)
-
       tag = 0
       ct = "".b
-      # AAD part
-      # PT -> CT/tag part
+
+      # Associated Data
+      i = 0
+      while i*16 < aad.size
+        block = aad[i*16, 16]
+        block += "\x00".b * (16 - block.size)
+        tag = mul(h, tag ^ block.to_hex.to_i(16))
+        i += 1
+      end
+
+      # Plaintext
+      j = 0
+      while j*16 < pt.size
+        block = pt[j*16, 16]
+        ctr_block = encrypt_block(key, counter_block(iv, j+2))
+        ct_block = block.xor(ctr_block[0, block.size])
+        ct << ct_block
+        ctval = ct_block + "\x00".b * (16 - block.size)
+        tag = mul(h, tag ^ ctval.to_hex.to_i(16))
+        j += 1
+      end
 
       final_block = (aad.bytesize*8) * (2**64) | pt.bytesize*8
-      tag = mul(tag^final_block, h)
+      tag = mul(h, tag^final_block)
       tag ^= ivh
 
       [aad, ct, tag]
