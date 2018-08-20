@@ -4,4 +4,12 @@ class String
       a*256 + b
     end
   end
+
+  def from_hex
+    [self].pack("H*")
+  end
+
+  def to_hex
+    self.unpack("H*")[0]
+  end
 end

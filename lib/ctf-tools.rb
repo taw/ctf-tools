@@ -1,3 +1,5 @@
+require_relative "aes"
+require_relative "aes128"
 require_relative "ecc"
 require_relative "integer"
 require_relative "md4"
