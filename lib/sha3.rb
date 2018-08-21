@@ -28,24 +28,65 @@ module SHA3
       0x8000000080008008,
     ]
 
+    private def rot(x, i)
+      (x << i) & 0xffff_ffff_ffff_ffff | (x >> (64-i))
+    end
+
+    # For some example:
+    # https://csrc.nist.gov/csrc/media/projects/cryptographic-standards-and-guidelines/documents/examples/sha3-256_msg0.pdf
+
     # state is [x+5*y]
     def round(state, rci)
-      # # θ step
-      # C[x] = A[x,0] xor A[x,1] xor A[x,2] xor A[x,3] xor A[x,4],   for x in 0…4
-      # D[x] = C[x-1] xor rot(C[x+1],1),                             for x in 0…4
-      # A[x,y] = A[x,y] xor D[x],                           for (x,y) in (0…4,0…4)
+      a = state.dup
+      # θ step
+      # C[x] = A[x,0] xor A[x,1] xor A[x,2] xor A[x,3] xor A[x,4], for x in 0…4
+      c = [
+        a[ 0] ^ a[ 5] ^ a[10] ^ a[15] ^ a[20],
+        a[ 1] ^ a[ 6] ^ a[11] ^ a[16] ^ a[21],
+        a[ 2] ^ a[ 7] ^ a[12] ^ a[17] ^ a[22],
+        a[ 3] ^ a[ 8] ^ a[13] ^ a[18] ^ a[23],
+        a[ 4] ^ a[ 9] ^ a[14] ^ a[19] ^ a[24],
+      ]
+      # D[x] = C[x-1] xor rot(C[x+1],1), for x in 0…4
+      d = (0..4).map{|x|
+        c[(x-1) % 5] ^ rot(c[(x+1) % 5], 1)
+      }
+      # A[x,y] = A[x,y] xor D[x], for (x,y) in (0…4,0…4)
+      5.times do |x|
+        5.times do |y|
+          a[x+5*y] = a[x+5*y] ^ d[x]
+        end
+      end
 
-      # # ρ and π steps
-      # B[y,2*x+3*y] = rot(A[x,y], r[x,y]),                 for (x,y) in (0…4,0…4)
+      # ρ and π steps
+      # B[y,2*x+3*y] = rot(A[x,y], r[x,y]), for (x,y) in (0…4,0…4)
+      b = 25.times.map{ 0 }
+      r = [
+         0,  1, 62, 28, 27,
+        36, 44,  6, 55, 20,
+         3, 10, 43, 25, 39,
+        41, 45, 15, 21,  8,
+        18,  2, 61, 56, 14,
+      ]
+      5.times do |x|
+        5.times do |y|
+          b[y + 5*((2*x+3*y) % 5)] = rot(a[x+5*y], r[x+5*y])
+        end
+      end
 
-      # # χ step
+      # χ step
       # A[x,y] = B[x,y] xor ((not B[x+1,y]) and B[x+2,y]),  for (x,y) in (0…4,0…4)
+      5.times do |x|
+        5.times do |y|
+          b1 = b[((x+1) % 5) + 5*y]
+          b2 = b[((x+2) % 5) + 5*y]
+          a[x+5*y] = b[x+5*y] ^ ((~b1) & b2)
+        end
+      end
 
-      # # ι step
-      # A[0,0] = A[0,0] xor RC
-
-      # return A
-      state
+      # ι step
+      a[0] ^= rci
+      a
     end
 
     def permute(state)
@@ -75,16 +116,10 @@ module SHA3
         s = absorb_block(s, block)
       end
 
-      # Squeezing phase
+      # There's squeezing phase in more generic Keccak
+      # but there's none in SHA3-256
 
-      # Z = empty string
-      # while output is requested
-      #   Z = Z || S[x,y],                        for (x,y) such that x+5*y < r/w
-      #   S = Keccak-f[r+c](S)
-
-      # return Z
-
-      ""
+      s[0,4].pack("Q<4").unpack("Q>4").map{|x| "%016x" % x }.join
     end
 
     private def initial_state
