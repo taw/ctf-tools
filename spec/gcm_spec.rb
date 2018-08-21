@@ -10,20 +10,29 @@ describe GCM do
     end
   end
 
-  describe "encrypt" do
+  describe "encrypt and decrypt" do
     let(:pt) { "" }
     let(:aad) { "" }
     let(:ct) { "" }
 
-    let(:result) { GCM.encrypt(key.from_hex, iv.from_hex, aad.from_hex, pt.from_hex) }
-    let(:actual_aad) { result[0].to_hex }
-    let(:actual_ct) { result[1].to_hex }
-    let(:actual_tag) { result[2].to_s(16) }
+    let(:encrypted_result) { GCM.encrypt(key.from_hex, iv.from_hex, aad.from_hex, pt.from_hex) }
+    let(:encrypted_aad) { encrypted_result[0].to_hex }
+    let(:encrypted_ct) { encrypted_result[1].to_hex }
+    let(:encrypted_tag) { encrypted_result[2].to_s(16) }
+
+    let(:decrypted_result) { GCM.decrypt(key.from_hex, iv.from_hex, aad.from_hex, ct.from_hex) }
+    let(:decrypted_aad) { decrypted_result[0].to_hex }
+    let(:decrypted_pt) { decrypted_result[1].to_hex }
+    let(:decrypted_tag) { decrypted_result[2].to_s(16) }
 
     subject do
-      expect(actual_aad).to eq(aad)
-      expect(actual_ct).to eq(ct)
-      expect(actual_tag).to eq(tag)
+      expect(encrypted_aad).to eq(aad)
+      expect(encrypted_ct).to eq(ct)
+      expect(encrypted_tag).to eq(tag)
+
+      expect(decrypted_aad).to eq(aad)
+      expect(decrypted_pt).to eq(pt)
+      expect(decrypted_tag).to eq(tag)
     end
 
     describe "empty / empty" do
