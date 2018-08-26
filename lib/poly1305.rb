@@ -15,5 +15,20 @@ module Poly1305
       end
       mr
     end
+
+    def aes(k, n)
+      # binding.pry
+      block = ("%32x" % n).from_hex
+      encrypt_block(k, block).to_hex.to_i(16)
+    end
+
+    private def encrypt_block(key, block)
+      raise unless block.size == 16 and key.size == 16
+      crypt = OpenSSL::Cipher.new("AES-128-ECB")
+      crypt.encrypt
+      crypt.key = key
+      crypt.padding = 0
+      crypt.update(block) + crypt.final
+    end
   end
 end
