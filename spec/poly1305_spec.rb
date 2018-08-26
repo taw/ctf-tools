@@ -6,17 +6,19 @@ describe Poly1305 do
   let(:k) { k_str.gsub(/\s/, "").from_hex }
   let(:mr) { mr_str.to_i(16) }
   let(:n) { n_str.gsub(/\s/, "").to_i(16) }
-  let(:aes_n) { aes_n_str.gsub(/\s/, "").to_i(16) }
-  let(:mac) { mac_str.gsub(/\s/, "").to_i(16) }
+  let(:aes_n) { aes_n_str.split.reverse.join.to_i(16) }
+  let(:mac) { mac_str.split.reverse.join.to_i(16) }
 
   let(:actual_c) { Poly1305.pad_and_split(m) }
   let(:actual_mr) { Poly1305.poly(r, c) }
   let(:actual_aes_n) { Poly1305.aes(k, n) }
+  let(:actual_mac) { Poly1305.mac(k, r, n, m) }
 
   subject do
     expect(actual_c).to eq(c)
     expect(actual_mr).to eq(mr)
     expect(actual_aes_n).to eq(aes_n)
+    expect(actual_mac).to eq(mac)
   end
 
   describe do

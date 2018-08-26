@@ -19,7 +19,14 @@ module Poly1305
     def aes(k, n)
       # binding.pry
       block = ("%32x" % n).from_hex
-      encrypt_block(k, block).to_hex.to_i(16)
+      encrypt_block(k, block).reverse.to_hex.to_i(16)
+    end
+
+    def mac(k, r, n, m)
+      c = pad_and_split(m)
+      mr = poly(r, c)
+      aes_n = aes(k, n)
+      (mr + aes_n) % (2**128)
     end
 
     private def encrypt_block(key, block)
