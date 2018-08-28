@@ -1,9 +1,9 @@
 # It's dependent on index range, not on prime, so we can pick a big one
 describe KangarooDiscreteLogarithm do
-  let(:bits) { 256 }
+  let(:bits) { 512 }
   let(:n) { OpenSSL::BN.generate_prime(bits).to_i }
-  let(:min) { 0 }
-  let(:max) { 2**20 }
+  let(:min) { 1024 }
+  let(:max) { 2**32 }
 
   let(:g) { 2 }
   let(:k) { rand(min..max) }
