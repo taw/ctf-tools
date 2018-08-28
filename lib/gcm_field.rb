@@ -19,7 +19,7 @@ class GCMField
   end
 
   def *(other)
-    a, b = self.value, other.value
+    a, b = @value, other.value
     result = 0
     mask = 2**128 + 2**127 + 2**126 + 2**121 + 1
     max = 2**128
@@ -57,6 +57,51 @@ class GCMField
 
   def hash
     @value.hash
+  end
+
+  def /(other)
+    divmod(other)[0]
+  end
+
+  def %(other)
+    divmod(other)[1]
+  end
+
+  # This is encoded backwards
+  # Also is this even sensible? It's a damn field, why does it need modulo?
+  def divmod(other)
+    a, b = @value, other.value
+    q, r = 0, a
+    if b == 0
+      raise ZeroDivisionError, "GF(2^128) doesn't allow zero division either"
+    end
+    while true
+      deg_r = degree(r)
+      deg_b = degree(b)
+      break unless deg_r >= deg_b
+      d = deg_r - deg_b
+      q ^= (1 << 127) >> d
+      r ^= (b >> d)
+    end
+    [GCMField.new(q), GCMField.new(r)]
+  end
+
+  # This looks slow as hell
+  private def degree(value)
+    index = value.to_s(2).reverse.index("1")
+    if index
+      127 - index
+    else
+      -1
+    end
+  end
+
+  def to_s
+    ("%0128b" % @value).reverse
+  end
+
+  def inspect
+    "GCMField<#{to_s}>"
   end
 
   class << self

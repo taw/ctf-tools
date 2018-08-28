@@ -36,4 +36,21 @@ describe GCMField do
     expect(a ** 1).to eq(a)
     expect(a ** 0).to eq(one)
   end
+
+  it "divmod" do
+    r, s = a.divmod(b)
+    expect(r * b + s).to eq(a)
+    r, s = b.divmod(a)
+    expect(r * a + s).to eq(b)
+    expect{ a.divmod(zero) }.to raise_error(ZeroDivisionError)
+    expect(a.divmod(one)).to eq([a, zero])
+  end
+
+  it "/" do
+    expect(a / b).to eq(a.divmod(b)[0])
+  end
+
+  it "%" do
+    expect(a % b).to eq(a.divmod(b)[1])
+  end
 end
