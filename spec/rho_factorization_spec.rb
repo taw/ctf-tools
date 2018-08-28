@@ -5,7 +5,6 @@ describe RhoFactorization do
   let(:n) { p * q }
 
   it do
-    puts [p, q, n]
     u, i = RhoFactorization.factor(n)
     # puts "Used #{i} steps"
     expect([u, n/u]).to match_array([p, q])

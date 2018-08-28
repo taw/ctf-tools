@@ -11,7 +11,7 @@ describe KangarooDiscreteLogarithm do
 
   it do
     u, i = KangarooDiscreteLogarithm.log(g, gk, n, min, max)
-    puts "Took #{i} steps"
+    # puts "Took #{i} steps"
     expect(u).to eq(k)
   end
 end
