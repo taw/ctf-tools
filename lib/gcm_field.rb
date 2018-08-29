@@ -59,31 +59,13 @@ class GCMField
     @value.hash
   end
 
+  def inverse
+    raise ZeroDivisionError, "Can't invert 0" if @value == 0
+    self ** ((1 << 128) - 2)
+  end
+
   def /(other)
-    divmod(other)[0]
-  end
-
-  def %(other)
-    divmod(other)[1]
-  end
-
-  # This is encoded backwards
-  # Also is this even sensible? It's a damn field, why does it need modulo?
-  def divmod(other)
-    a, b = @value, other.value
-    q, r = 0, a
-    if b == 0
-      raise ZeroDivisionError, "GF(2^128) doesn't allow zero division either"
-    end
-    while true
-      deg_r = degree(r)
-      deg_b = degree(b)
-      break unless deg_r >= deg_b
-      d = deg_r - deg_b
-      q ^= (1 << 127) >> d
-      r ^= (b >> d)
-    end
-    [GCMField.new(q), GCMField.new(r)]
+    self * other.inverse
   end
 
   # This looks slow as hell
