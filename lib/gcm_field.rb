@@ -38,7 +38,10 @@ class GCMField
   end
 
   def **(k)
-    raise unless k.is_a?(Integer) and k >= 0
+    raise unless k.is_a?(Integer)
+    if k < 0
+      return inverse ** (-k)
+    end
     result = GCMField.one
     n = self
     while k > 0

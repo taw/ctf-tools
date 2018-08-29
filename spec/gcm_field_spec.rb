@@ -35,6 +35,9 @@ describe GCMField do
     )
     expect(a ** 1).to eq(a)
     expect(a ** 0).to eq(one)
+    expect(a ** -7).to eq(
+      a.inverse ** 7
+    )
   end
 
   it "/" do
