@@ -47,4 +47,10 @@ describe GCMField do
     expect(one / a).to eq(a.inverse)
     expect{ a / zero }.to raise_error(ZeroDivisionError)
   end
+
+  it "sqrt" do
+    expect(a.sqrt ** 2).to eq(a)
+    expect(one.sqrt ** 2).to eq(one)
+    expect(zero.sqrt ** 2).to eq(zero)
+  end
 end
