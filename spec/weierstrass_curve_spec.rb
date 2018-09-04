@@ -1,6 +1,6 @@
-describe ECC do
-  describe "ECC(GF5, 1, 1)" do
-    let(:group) { ECC.new(5, 1, 1) }
+describe WeierstrassCurve do
+  describe "WeierstrassCurve(GF5, 1, 1)" do
+    let(:group) { WeierstrassCurve.new(5, 1, 1) }
     let(:points) { group.points }
 
     it do
@@ -17,8 +17,8 @@ describe ECC do
     end
   end
 
-  describe "ECC(GF257, 1, 1)" do
-    let(:group) { ECC.new(257, 1, 1) }
+  describe "WeierstrassCurve(GF257, 1, 1)" do
+    let(:group) { WeierstrassCurve.new(257, 1, 1) }
     let(:g) { [0, 1] }
     let(:g15) { 15.times.map{ g }.reduce{|a,b| group.add(a,b) } }
 
@@ -33,7 +33,7 @@ describe ECC do
   end
 
   describe do
-    let(:group) { ECC.new(65537, 1, 1) }
+    let(:group) { WeierstrassCurve.new(65537, 1, 1) }
 
     it "points" do
       expect(group.points.size).to eq(65581)

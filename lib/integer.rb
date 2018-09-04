@@ -1,4 +1,15 @@
 class Integer
+  def count_bits
+    raise if self < 0
+    result = 0
+    n = self
+    while n > 0
+      result += (n&1)
+      n >>= 1
+    end
+    result
+  end
+
   def to_s_binary
     i = self
     out = []

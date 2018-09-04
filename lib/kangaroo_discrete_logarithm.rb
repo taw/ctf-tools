@@ -1,6 +1,15 @@
 module KangarooDiscreteLogarithm
   class << self
     def log(g, gk, n, min, max, s=0)
+      # It's a total mystery how to pick this
+      # Something up to sqrt(N) ???
+      # Something about powers of two?
+      # In theory a lot of fs work as long as they're pseudorandom,
+      # but it has huge performance implications
+      hash_size = (Math.log2(max-min)/2).round + 2
+      # p [:hash_size, min..max, hash_size]
+      f = proc{|u| 1 << ((u+s).hash % hash_size)  }
+
       xtrap, xtrapd = nil, nil
       ytrap, ytrapd = nil, nil
 
@@ -17,17 +26,14 @@ module KangarooDiscreteLogarithm
 
       while true
         i += 1
-        fx = f(x+s)
-        fy = f(y+s)
+        fx = f[x]
+        fy = f[y]
 
         xd += fx
         yd += fy
 
         x = (x * gv[fx]) % n
         y = (y * gv[fy]) % n
-
-        # binding.pry if g.powmod(xd, n) != x
-        # binding.pry if gk * g.powmod(yd, n) % n != y
 
         # Power of two? Set a trap!
         if (i-1) & i == 0
@@ -49,15 +55,6 @@ module KangarooDiscreteLogarithm
           return u, i
         end
       end
-    end
-
-    # It's a total mystery how to pick this
-    # Something up to sqrt(N) ???
-    # Something about powers of two?
-    # In theory a lot of fs work as long as they're pseudorandom,
-    # but it has huge performance implications
-    def f(u)
-      1 << (u.hash % 12)
     end
   end
 end
