@@ -15,7 +15,6 @@ describe ECC do
         end
       end
     end
-
   end
 
   describe "ECC(GF257, 1, 1)" do
@@ -23,9 +22,21 @@ describe ECC do
     let(:g) { [0, 1] }
     let(:g15) { 15.times.map{ g }.reduce{|a,b| group.add(a,b) } }
 
+    it "points" do
+      expect(group.points.size).to eq(249)
+    end
+
     it "multiply" do
       expect(group.multiply(g, 15)).to eq(g15)
       expect(group.multiply(g, -15)).to eq(group.negate(g15))
+    end
+  end
+
+  describe do
+    let(:group) { ECC.new(65537, 1, 1) }
+
+    it "points" do
+      expect(group.points.size).to eq(65581)
     end
   end
 end
