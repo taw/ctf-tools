@@ -31,7 +31,9 @@ class MontgomeryCurve
         w.add(w_a, w_b)
       }
     }.uniq
-    w_cx.map{|w_c| from_weierstrass(w_c)[0] }
+    # a+b == -a-b
+    # a-b == b-a
+    candidates = w_cx.map{|w_c| from_weierstrass(w_c)[0] }.uniq
   end
 
   def cswap(x, y, c)

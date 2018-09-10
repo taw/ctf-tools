@@ -66,16 +66,17 @@ describe MontgomeryCurve do
   end
 
   # It doesn't work on curve, but it works if we convert it to a different curve
-  describe "#add" do
-    let(:index_a) { rand(100..1000) }
-    let(:index_b) { rand(1001..2000) }
+  describe "#add_by_weierstass" do
+    let(:index_a) { rand(100..2000) }
+    let(:index_b) { rand(100..2000) }
     let(:a) { montgomery_curve.ladder(base_point, index_a) }
     let(:b) { montgomery_curve.ladder(base_point, index_b) }
     let(:c) { montgomery_curve.add_by_weierstass(a, b) }
-    let(:expected_c) { montgomery_curve.ladder(base_point, index_b + index_a) }
+    let(:a_plus_b) { montgomery_curve.ladder(base_point, index_b + index_a) }
+    let(:a_minus_b) { montgomery_curve.ladder(base_point, (index_b - index_a).abs) }
 
     it do
-      expect(c).to include(expected_c)
+      expect(c).to match_array([a_plus_b, a_minus_b])
     end
   end
 
