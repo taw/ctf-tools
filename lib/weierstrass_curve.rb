@@ -120,4 +120,35 @@ class WeierstrassCurve
   def ==(other)
     other.is_a?(WeierstrassCurve) and self.p == other.p and self.a == other.a and self.b == other.b
   end
+
+  def log_by_brute_force(base_point, target, min, max)
+    gi = multiply(base_point, min)
+    (min..max).each do |i|
+      return i if gi == target
+      gi = add(gi, base_point)
+    end
+    nil
+  end
+
+  def log_by_bsgs(base_point, target, min, max)
+    range_size = max-min+1
+    s = Math.sqrt(range_size).round
+    z = (range_size + s - 1) / s
+    raise unless s*z >= range_size
+    ht = {}
+    gi = multiply(base_point, min)
+    s.times do |i|
+      ht[gi] = min+i
+      gi = add(gi, base_point)
+    end
+    gms = multiply(negate(base_point), s)
+    gj = target
+    z.times do |j|
+      if ht[gj]
+        return ht[gj] + s * j
+      end
+      gj = add(gj, gms)
+    end
+    nil
+  end
 end
