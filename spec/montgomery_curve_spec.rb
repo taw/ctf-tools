@@ -104,14 +104,41 @@ describe MontgomeryCurve do
     expect(montgomery_curve.associated_weierstrass_curve).to eq(weierstrass_curve)
   end
 
-  it "from and to weierstrass form" do
-    10.times do
-      x, y = weierstrass_curve.random_point
-      expect(weierstrass_curve.valid?([x, y])).to eq true
-      u, v = montgomery_curve.from_weierstrass([x, y])
-      expect(montgomery_curve.valid?(u, v)).to eq true
-      x1, y1 = montgomery_curve.to_weierstrass([u, v])
-      expect([x1,y1]).to eq([x,y])
+  describe "from and to weierstrass form" do
+    let(:w) { m.associated_weierstrass_curve }
+
+    describe "b=1" do
+      let(:m) { montgomery_curve }
+
+      it do
+        10.times do
+          xy  = w.random_point
+          xy2 = w.multiply(xy, 2)
+          expect(w.valid?(xy)).to eq true
+          uv = m.from_weierstrass(xy)
+          u2 = m.multiply(uv[0], 2)
+          expect(m.valid?(*uv)).to eq true
+          expect(m.to_weierstrass(uv)).to eq(xy)
+          expect(m.to_weierstrass_all(u2)).to include(xy2)
+        end
+      end
+    end
+
+    describe "b!=1" do
+      let(:m) { montgomery_curve.to_twist }
+
+      it do
+        10.times do
+          xy  = w.random_point
+          xy2 = w.multiply(xy, 2)
+          expect(w.valid?(xy)).to eq true
+          uv = m.from_weierstrass(xy)
+          u2 = m.multiply(uv[0], 2)
+          expect(m.valid?(*uv)).to eq true
+          expect(m.to_weierstrass(uv)).to eq(xy)
+          expect(m.to_weierstrass_all(u2)).to include(xy2)
+        end
+      end
     end
   end
 
@@ -139,6 +166,18 @@ describe MontgomeryCurve do
         expect(montgomery_curve.valid?(point)).to eq false
         expect(montgomery_curve.ladder(point, q)).to eq(0)
       end
+    end
+  end
+
+  describe "#log_by_bsgs" do
+    let(:twist_curve) { montgomery_curve.to_twist }
+    let(:point_order) { 2323367 }
+    let(:base_point) { twist_curve.multiply(twist_curve.random_point, twist_order / point_order) }
+    let(:k) { rand(0...point_order) }
+    let(:point) { twist_curve.multiply(base_point, k) }
+
+    it do
+      expect(twist_curve.log_by_bsgs(base_point, point, point_order)).to match_array([k, point_order-k])
     end
   end
 end

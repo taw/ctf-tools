@@ -1,3 +1,4 @@
+# y^2 = x^3 + ax + b
 class WeierstrassCurve
   attr_reader :p, :a, :b
   def initialize(p, a, b)
@@ -5,7 +6,7 @@ class WeierstrassCurve
     @a = a % p
     @b = b % p
 
-    if (4 * (@a**3) + 27 * (@b**2) % @p) == 0
+    if (4 * (@a**3) + 27 * (@b**2)) % @p == 0
       raise "Incorrect curve"
     end
   end
