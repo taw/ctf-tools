@@ -179,5 +179,13 @@ describe MontgomeryCurve do
     it do
       expect(twist_curve.log_by_bsgs(base_point, point, point_order)).to match_array([k, point_order-k])
     end
+
+    describe "performance test" do
+      let(:point_order) { 1571528514013 }
+
+      it do
+        expect(twist_curve.log_by_bsgs(base_point, point, point_order)).to match_array([k, point_order-k])
+      end
+    end
   end
 end
