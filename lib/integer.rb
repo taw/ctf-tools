@@ -124,9 +124,9 @@ class Integer
   end
 
   def self.chinese_remainder(remainders, mods)
-    max = mods.inject(:*)
+    max = mods.reduce(:*)
     series = remainders.zip(mods).map{ |r,m| (r * max * (max/m).invmod(m) / m) }
-    series.inject(:+) % max
+    series.reduce(:+) % max
   end
 
   def discrete_log_linear(base, prime)
