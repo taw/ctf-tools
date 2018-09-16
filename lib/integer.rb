@@ -122,4 +122,50 @@ class Integer
       self.tonelli_sqrtmod(p)
     end
   end
+
+  def self.chinese_remainder(remainders, mods)
+    max = mods.inject(:*)
+    series = remainders.zip(mods).map{ |r,m| (r * max * (max/m).invmod(m) / m) }
+    series.inject(:+) % max
+  end
+
+  def discrete_log_linear(base, prime)
+    target = self % prime
+    base = base % prime
+    max = prime - 1
+    x = 1
+    (0..max).each do |i|
+      return i if x == self
+      x = (x * base) % prime
+    end
+    # raise "Math doesn't work"
+    nil
+  end
+
+  def discrete_log_bsgs(base, prime)
+    target = self % prime
+    base = base % prime
+    min = 0
+    max = prime - 1
+    range_size = max-min+1
+    s = Math.sqrt(range_size).round
+    z = (range_size + s - 1) / s
+    raise unless s*z >= range_size
+    ht = {}
+    gi = base.powmod(min, prime)
+    s.times do |i|
+      ht[gi] = min+i
+      gi = (gi * base) % prime
+    end
+    gms = base.invmod(prime).powmod(s, prime)
+    gj = target
+    z.times do |j|
+      if ht[gj]
+        return ht[gj] + s * j
+      end
+      gj = (gj * gms) % prime
+    end
+    # raise "Math doesn't work"
+    nil
+  end
 end

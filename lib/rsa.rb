@@ -12,12 +12,6 @@ module RSA
       e.invmod((p-1)*(q-1))
     end
 
-    def chinese_remainder(remainders, mods)
-      max = mods.inject(:*)
-      series = remainders.zip(mods).map{ |r,m| (r * max * (max/m).invmod(m) / m) }
-      series.inject(:+) % max
-    end
-
     def factor_modulus(e:, d:, n:)
       t = (e * d - 1)
       s = 0

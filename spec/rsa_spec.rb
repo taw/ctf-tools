@@ -19,15 +19,6 @@ describe RSA do
     expect(RSA.derive_d(p: p, q: q, e: e)).to eq(d)
   end
 
-  it "chinese_remainder" do
-    a = rand(p)
-    b = rand(q)
-    c = RSA.chinese_remainder([a,b], [p,q])
-    expect(c % p).to eq(a)
-    expect(c % q).to eq(b)
-    expect(0...n).to include(c)
-  end
-
   it "factor_modulus" do
     expect(RSA.factor_modulus(n: n, e: e, d: d)).to eq([p, q])
   end
