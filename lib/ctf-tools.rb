@@ -1,4 +1,5 @@
 require "openssl"
+require "prime"
 require "pry"
 require_relative "aes"
 require_relative "aes128"

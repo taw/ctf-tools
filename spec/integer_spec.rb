@@ -63,13 +63,32 @@ describe Integer do
       end
     end
 
-    describe "discrete_log_bsgs_primepow"  do
-      let(:modulus) { prime ** pow }
-      let(:prime) { 2323367 }
-      let(:pow) { 8 }
-      let(:k2) { target.discrete_log_bsgs_primepow(base, prime, pow) }
-      it do
-        expect(base.powmod(k, modulus)).to eq(base.powmod(k2, modulus))
+    describe "discrete_log_pohe" do
+      let(:factors) { (modulus-1).prime_division }
+      let(:base) { rand(2...modulus) }
+      let(:k) { rand(2...modulus-1) }
+      let(:target) { base.powmod(k, modulus) }
+      let(:k2) { target.discrete_log_pohe(base, modulus, factors) }
+
+      describe do
+        let(:modulus) { 989017936638907145759 }
+        it do
+          expect(base.powmod(k, modulus)).to eq(base.powmod(k2, modulus))
+        end
+      end
+
+      describe do
+        let(:modulus) { 78333578908238416430605891609237947274284209366779293781607595291342610573108223 }
+        it do
+          expect(base.powmod(k, modulus)).to eq(base.powmod(k2, modulus))
+        end
+      end
+
+      describe do
+        let(:modulus) { 12654486154030758518290991418279562467539928256172119031883910099067494898879159 }
+        it do
+          expect(base.powmod(k, modulus)).to eq(base.powmod(k2, modulus))
+        end
       end
     end
   end

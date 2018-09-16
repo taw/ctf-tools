@@ -142,11 +142,10 @@ class Integer
     nil
   end
 
-  def discrete_log_bsgs(base, prime)
+  def discrete_log_bsgs(base, prime, max=prime-1)
     target = self % prime
     base = base % prime
     min = 0
-    max = prime - 1
     range_size = max-min+1
     s = Math.sqrt(range_size).round
     z = (range_size + s - 1) / s
@@ -167,5 +166,36 @@ class Integer
     end
     # raise "Math doesn't work"
     nil
+  end
+
+  def discrete_log_pohe(base, prime, factors)
+    target = self % prime
+    base = base % prime
+
+    remainders = []
+    mods = []
+    factors.each do |pi, ei|
+      pi_ei = pi**ei
+      expi = (prime-1)/pi
+      raise unless (prime-1) % pi == 0
+      gi = base.powmod(expi, prime)
+      if ei == 1
+        hi = target.powmod(expi, prime)
+        xi = hi.discrete_log_bsgs(gi, prime, pi-1)
+      else
+        xi = 0
+        base_inv = base.invmod(prime)
+        ei.times do |k|
+          shiftexp = (prime-1) / (pi ** (k + 1))
+          tmp_power = base_inv.powmod(shiftexp*xi, prime)
+          zpower = (target.powmod(shiftexp, prime) * tmp_power) % prime
+          lk = zpower.discrete_log_bsgs(gi, prime, pi-1)
+          xi += lk * (pi ** k)
+        end
+      end
+      remainders << xi
+      mods << pi_ei
+    end
+    Integer.chinese_remainder(remainders, mods)
   end
 end
