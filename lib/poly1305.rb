@@ -17,7 +17,6 @@ module Poly1305
     end
 
     def aes(k, n)
-      # binding.pry
       block = ("%32x" % n).from_hex
       encrypt_block(k, block).reverse.to_hex.to_i(16)
     end
