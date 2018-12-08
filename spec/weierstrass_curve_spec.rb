@@ -20,7 +20,7 @@ describe WeierstrassCurve do
   describe "WeierstrassCurve(GF257, 1, 1)" do
     let(:group) { WeierstrassCurve.new(257, 1, 1) }
     let(:g) { [0, 1] }
-    let(:g15) { 15.times.map{ g }.reduce{|a,b| group.add(a,b) } }
+    let(:g15) { 15.times.map { g }.reduce { |a, b| group.add(a, b) } }
 
     it "points" do
       expect(group.points.size).to eq(249)
@@ -32,11 +32,26 @@ describe WeierstrassCurve do
     end
   end
 
-  describe "#points" do
-    let(:group) { WeierstrassCurve.new(65537, 1, 1) }
+  describe "points counting" do
+    describe "slow" do
+      let(:group) { WeierstrassCurve.new(65537, 1, 1) }
+      let(:group_size) { 65581 }
 
-    it "points" do
-      expect(group.points.size).to eq(65581)
+      it "points" do
+        expect(group.points.size).to eq(group_size)
+        expect(group.count_points_brute_force).to eq(group_size)
+        expect(group.count_points_hasse).to eq(group_size)
+      end
+    end
+
+    describe "fast" do
+      let(:group) { WeierstrassCurve.new(2147483647, 1, 1) }
+      let(:group_size) { 2147423271 }
+
+      it "points" do
+        expect(group.count_points_gsbs).to eq(group_size)
+        expect(group.count_points_hasse).to eq(group_size)
+      end
     end
   end
 
@@ -51,14 +66,14 @@ describe WeierstrassCurve do
     describe "#log_by_brute_force" do
       let(:order) { 1621 }
       it do
-        expect(group.log_by_brute_force(base_point, point, 0, order-1)).to eq(k)
+        expect(group.log_by_brute_force(base_point, point, 0, order - 1)).to eq(k)
       end
     end
 
     describe "#log_by_bsgs" do
       let(:order) { 2323367 }
       it do
-        expect(group.log_by_bsgs(base_point, point, 0, order-1)).to eq(k)
+        expect(group.log_by_bsgs(base_point, point, 0, order - 1)).to eq(k)
       end
     end
   end
