@@ -62,6 +62,10 @@ class GCMField
     @value.hash
   end
 
+  def eql?(other)
+    self == other
+  end
+
   def inverse
     raise ZeroDivisionError, "Can't invert 0" if @value == 0
     self ** ((1 << 128) - 2)
