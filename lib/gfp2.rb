@@ -33,9 +33,13 @@ class GFp2
     c1 = self.a * other.b + self.b * other.a
     c2 = self.b * other.b
     # Irreductible polynomial is (unsurprisingly): x^2 + 1
+    # This only works for p % 4 == 3
     self.class.new(c0 - c2, c1)
   end
 
+  # This is just an optimization
+  # This would work too:
+  #   self * self
   def square
     c0 = @a * @a
     c1 = 2 * @a * @b

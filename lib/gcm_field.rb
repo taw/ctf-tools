@@ -1,4 +1,4 @@
-# GF(2^128) mod x**128 + x**7 + x** + x + 1, backwards
+# GF(2^128) mod x**128 + x**7 + x**6 + x + 1, backwards
 # The weird-ass group used by GCM and nothing else
 class GCMField
   attr_reader :value
