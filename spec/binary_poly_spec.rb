@@ -114,4 +114,27 @@ describe BinaryPoly do
       end
     end
   end
+
+  describe "divmod" do
+    it "raises exception if dividing by 0" do
+      small_points.each do |a|
+        expect{ a.divmod(zero) }.to raise_error(ZeroDivisionError)
+        expect{ a / zero }.to raise_error(ZeroDivisionError)
+        expect{ a % zero }.to raise_error(ZeroDivisionError)
+      end
+    end
+
+    it "divides and remainder is of lower degree than divisor" do
+      small_points[0,16].each do |a|
+        small_points[0,16].each do |b|
+          next if b.zero?
+          c, d = a.divmod(b)
+          expect(a).to eq(b*c + d)
+          expect(d.degree).to be < b.degree
+          expect(c).to eq(a / b)
+          expect(d).to eq(a % b)
+        end
+      end
+    end
+  end
 end

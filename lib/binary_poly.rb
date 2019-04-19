@@ -106,7 +106,31 @@ class BinaryPoly
 
   def divmod(other)
     raise unless other.instance_of?(BinaryPoly)
-    raise "TODO"
+    raise ZeroDivisionError, "Can't divide by 0" if other.zero?
+    result = 0
+    rem = @value
+    divisor = other.value
+
+    div_degree = other.degree
+    degree_difference = @degree - div_degree
+
+    degree_difference.downto(0) do |i|
+      top_power = 1 << (div_degree + i)
+      if (top_power & rem) != 0
+        rem ^= divisor << i
+        result ^= 1 << i
+      end
+    end
+
+    [BinaryPoly.new(result), BinaryPoly.new(rem)]
+  end
+
+  def /(other)
+    divmod(other)[0]
+  end
+
+  def %(other)
+    divmod(other)[1]
   end
 
   def irreducible?
