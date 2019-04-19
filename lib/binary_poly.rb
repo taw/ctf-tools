@@ -97,9 +97,14 @@ class BinaryPoly
     BinaryPoly.new(result)
   end
 
+  # Very unoptimized
   def gcd(other)
     raise unless other.instance_of?(BinaryPoly)
-    raise "TODO"
+    return self if self == other
+    return other.gcd(self) if other.degree > @degree
+    return self if other.zero?
+    q, r = self.divmod(other)
+    other.gcd(r)
   end
 
   def divmod(other)
@@ -155,10 +160,40 @@ class BinaryPoly
     result
   end
 
+  def irreducible_by_brute_force?
+    return true if @degree <= 1
+    return false if @value.even?
+    # deg-7 can be deg-3 factor
+    # deg-8 needs to have deg-4 factor
+    max_degree = @degree / 2
+    possible_divisors = (2...(2 << max_degree))
+    !possible_divisors.any?{|x| (self % BinaryPoly.new(x)).zero? }
+  end
+
   # Rabin's test of irreducibility
+  # https://en.wikipedia.org/wiki/Factorization_of_polynomials_over_finite_fields#Rabin's_test_of_irreducibility
+  # q == 2
+  # n == degree
+  # f == self
   def irreducible?
-    @degree.prime_division
-    raise "TODO"
+    return true if @degree <= 1
+    return false if @value.even?
+
+    x = BinaryPoly.x
+    distinct_primes = @degree.prime_division.map(&:first)
+
+    distinct_primes.each do |p|
+      nj = @degree / p
+      qnj = 2 ** nj
+      h = (x.powmod(qnj, self) - x) % self
+      g = self.gcd(h)
+      return false unless g.one?
+    end
+
+    qn = 2 ** @degree
+    g = (x.powmod(qn, self) - x) % self
+
+    g.zero?
   end
 
   # Wonders of characteristic 2 fields where a == -a
@@ -186,6 +221,10 @@ class BinaryPoly
 
     def random(max_degree)
       new(rand(2 ** (max_degree+1)))
+    end
+
+    def [](value)
+      new(value)
     end
   end
 end

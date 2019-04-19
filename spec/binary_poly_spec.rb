@@ -160,4 +160,32 @@ describe BinaryPoly do
       end
     end
   end
+
+  describe "gcd" do
+    it do
+      1000.times do
+        a = BinaryPoly.random(20)
+        b = BinaryPoly.random(20)
+        c = BinaryPoly.random(20)
+        ac = a*c
+        bc = b*c
+        factor = ac.gcd(bc)
+        expect(factor % c).to be_zero
+        expect(ac % factor).to be_zero
+        expect(bc % factor).to be_zero
+      end
+    end
+  end
+
+  describe "irreducible_by_brute_force?" do
+    it do
+      expect(small_points.select(&:irreducible_by_brute_force?).size).to eq(43)
+    end
+  end
+
+  describe "irreducible?" do
+    it do
+      expect(small_points.select(&:irreducible?)).to eq(small_points.select(&:irreducible_by_brute_force?))
+    end
+  end
 end
