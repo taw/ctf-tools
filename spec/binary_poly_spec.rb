@@ -115,6 +115,18 @@ describe BinaryPoly do
     end
   end
 
+  describe "**" do
+    it do
+        small_points.each do |a|
+        expect(a ** 2).to eq(a * a)
+        expect(a ** 3).to eq(a * a * a)
+        expect(a ** 5).to eq(a * a * a * a * a)
+        expect(a ** 7).to eq(a * a * a * a * a * a * a)
+        expect(a ** 10).to eq(a * a * a * a * a * a * a * a * a * a)
+      end
+    end
+  end
+
   describe "divmod" do
     it "raises exception if dividing by 0" do
       small_points.each do |a|
@@ -134,6 +146,17 @@ describe BinaryPoly do
           expect(c).to eq(a / b)
           expect(d).to eq(a % b)
         end
+      end
+    end
+  end
+
+  describe "powmod" do
+    it do
+      1000.times do
+        a = BinaryPoly.random(20)
+        f = BinaryPoly.random(20)
+        k = rand(21)
+        expect(a.powmod(k, f)).to eq((a**k) % f)
       end
     end
   end

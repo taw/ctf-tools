@@ -63,24 +63,22 @@ class BinaryPoly
     BinaryPoly.new(result)
   end
 
+  # There's surely a better way to do this, considering how fast square is
   def **(k)
     raise unless k.is_a?(Integer)
     raise "There are no inverses for BinaryPoly" if k < 0
     return BinaryPoly.one if k == 0
 
-    result = 0
-    a = @value
-    i = 1
-    j = 1
-    while a != 0
-      if a&i != 0
-        a ^= i
-        result ^= j
+    a = self
+    result = BinaryPoly.one
+    while k > 0
+      if k.odd?
+        result = (result * a)
       end
-      i <<= 1
-      j <<= k
+      a = a.square
+      k >>= 1
     end
-    BinaryPoly.new(result)
+    result
   end
 
   def square
@@ -107,12 +105,16 @@ class BinaryPoly
   def divmod(other)
     raise unless other.instance_of?(BinaryPoly)
     raise ZeroDivisionError, "Can't divide by 0" if other.zero?
+    div_degree = other.degree
+    degree_difference = @degree - div_degree
+
+    if degree_difference < 0
+      return [BinaryPoly.zero, self]
+    end
+
     result = 0
     rem = @value
     divisor = other.value
-
-    div_degree = other.degree
-    degree_difference = @degree - div_degree
 
     degree_difference.downto(0) do |i|
       top_power = 1 << (div_degree + i)
@@ -133,7 +135,29 @@ class BinaryPoly
     divmod(other)[1]
   end
 
+  # This could probably get a lot faster somehow
+  def powmod(k, other)
+    raise unless k.is_a?(Integer)
+    raise "There are no inverses for BinaryPoly" if k < 0
+    return BinaryPoly.one if k == 0
+    raise unless other.instance_of?(BinaryPoly)
+
+    a = self
+    result = BinaryPoly.one
+    while k > 0
+      if k.odd?
+        result = (result * a) % other
+      end
+      a = a.square % other
+      k >>= 1
+    end
+
+    result
+  end
+
+  # Rabin's test of irreducibility
   def irreducible?
+    @degree.prime_division
     raise "TODO"
   end
 
@@ -158,6 +182,10 @@ class BinaryPoly
 
     def x
       @x ||= new(2)
+    end
+
+    def random(max_degree)
+      new(rand(2 ** (max_degree+1)))
     end
   end
 end
