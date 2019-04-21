@@ -19,4 +19,8 @@ class GF2mField
   def hash
     @poly.hash
   end
+
+  def elements
+    (0...2**@degree).map{|i| GF2m.new(i, self) }
+  end
 end
