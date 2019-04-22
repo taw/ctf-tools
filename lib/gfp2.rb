@@ -37,6 +37,11 @@ class GFp2
     self.class.new(c0 - c2, c1)
   end
 
+  def /(other)
+    raise unless self.class == other.class
+    self * other.inverse
+  end
+
   # This is just an optimization
   # This would work too:
   #   self * self
@@ -126,7 +131,7 @@ class GFp2
       # We could handle other cases by choosing another polynomial
       raise "i^2 == -1 would not be irreducible unless prime%4 == 3" unless prime % 4 == 3
       @instances ||= {}
-      @instances[p] ||= begin
+      @instances[prime] ||= begin
         Class.new(GFp2) do
           @prime = prime
           define_method(:prime) { prime }

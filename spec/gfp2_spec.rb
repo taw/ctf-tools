@@ -64,6 +64,15 @@ describe GFp2 do
       end
     end
 
+    describe "#/" do
+      let(:point1) { group.new(12, 78) }
+      let(:point2) { group.new(52, 56) }
+      let(:point2_inv) { point2.inverse }
+      it do
+        expect(point1 / point2).to eq(point1 * point2_inv)
+      end
+    end
+
     describe "#-@" do
       let(:point1) { group.new(12, 78) }
       it do
