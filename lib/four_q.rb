@@ -36,18 +36,54 @@ class FourQ
   end
 
   def +(other)
-    raise
+    raise unless other.is_a?(FourQ)
+    ax = @x
+    bx = other.x
+    ay = @y
+    by = other.y
+
+    ax_bx = ax*bx
+    ay_by = ay*by
+    dxxyy = D * ax_bx * ay_by
+
+    rx = (ax*by + bx*ay) / (Field.one + dxxyy)
+    ry = (ay_by + ax_bx) / (Field.one - dxxyy)
+    FourQ.new(rx, ry)
+  end
+
+  def double
+    xy = @x*@y
+    x2 = @x*@x
+    y2 = @y*@y
+    dx2y2 = D*x2*y2
+    rx = (xy + xy) / (Field.one + dx2y2)
+    ry = (y2 + x2) / (Field.one - dx2y2)
+    FourQ.new(rx, ry)
   end
 
   def -@
-    raise
+    FourQ.new(-@x, @y)
   end
 
   def -(other)
-    raise
+    raise unless other.is_a?(FourQ)
+    self + (-other)
   end
 
-  def *
-    raise
+  def *(k)
+    raise unless k.is_a?(Integer)
+    return Zero if k == 0
+    return (-self) * (-k) if k < 0
+
+    result = Zero
+    a = self
+    while k > 0
+      if k.odd?
+        result += a
+      end
+      a = a.double
+      k >>= 1
+    end
+    result
   end
 end
