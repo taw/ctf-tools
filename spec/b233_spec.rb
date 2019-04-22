@@ -7,6 +7,7 @@ describe B233 do
       0x100_6a08a419_03350678_e58528be_bf8a0bef_f867a7ca_36716f7e_01f81052,
     )
   }
+  let(:zero) { B233::ZERO }
 
   # http://point-at-infinity.org/ecc/nisttv
   let(:pt_1) { B233.new(0x00FAC9DFCBAC8313BB2139F1BB755FEF65BC391F8B36F8F8EB7371FD558B, 0x01006A08A41903350678E58528BEBF8A0BEFF867A7CA36716F7E01F81052) }
@@ -32,6 +33,7 @@ describe B233 do
 
   describe "valid_point?" do
     it "return true for valid points" do
+      expect(zero.valid?).to be true
       expect(g.valid?).to be true
       expect(pt_1.valid?).to be true
       expect(pt_2.valid?).to be true
@@ -60,4 +62,42 @@ describe B233 do
     end
   end
 
+  describe "+" do
+    it do
+      expect(pt_1 + pt_2).to eq(pt_3)
+      expect(pt_7 + zero).to eq(pt_7)
+      expect(zero + pt_6).to eq(pt_6)
+      expect(pt_1 + pt_1).to eq(pt_2)
+    end
+  end
+
+  describe "-" do
+    it do
+      expect(-zero).to eq(zero)
+      expect(pt_7 - zero).to eq(pt_7)
+      expect(zero - pt_8).to eq(-pt_8)
+      expect(pt_5 - pt_3).to eq(pt_2)
+      expect(pt_5 - pt_5).to eq(zero)
+    end
+  end
+
+  describe "double" do
+    it do
+      expect(zero.double).to eq(zero)
+      expect(pt_4.double).to eq(pt_4 + pt_4)
+      expect(pt_3.double).to eq(pt_6)
+    end
+  end
+
+  describe "*" do
+    it do
+      expect(pt_1 * 1).to eq(pt_1)
+      expect(pt_2 * 5).to eq(pt_10)
+      expect(pt_3 * 0).to eq(zero)
+      expect(pt_12 * -1).to eq(-pt_12)
+      expect(pt_3 * -6).to eq(-pt_18)
+      expect(zero * 7).to eq(zero)
+      expect(zero * -4).to eq(zero)
+    end
+  end
 end
