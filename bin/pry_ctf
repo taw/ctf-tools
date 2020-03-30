@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "pry"
+require_relative "../lib/ctf-tools"
+
+1.times do
+  binding.pry
+end

@@ -56,6 +56,7 @@ class Integer
     x % et
   end
 
+  # max == self is awful performance
   def root(n)
     raise "Can't integer root negative number" if n < 0
     (0..self).bsearch{|i| self - i**n }
