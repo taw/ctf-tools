@@ -67,7 +67,7 @@ class WeierstrassCurve
       x = rand(0...@p)
       yy = (x ** 3 + @a * x + @b) % @p
       y = yy.sqrtmod(@p)
-      if y
+      if y and (y*y) % @p == yy
         if rand(2) == 0
           return [x, y]
         else
@@ -150,6 +150,7 @@ class WeierstrassCurve
   def count_points_hasse
     100.times do
       pt = random_point
+      raise "Invalid point" unless valid?(pt)
       # There will be at least one
       # If we find multiple, just restart
       ks = hasse_bounds.select { |k| multiply(pt, k + 1) == :infinity }
@@ -168,6 +169,7 @@ class WeierstrassCurve
     100.times do
       big_steps = {}
       pt = random_point
+      raise "Invalid point" unless valid?(pt)
       i = range_start
       pt_i = multiply(pt, range_start)
       pt_step = multiply(pt, step_size)
