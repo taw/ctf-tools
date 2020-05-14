@@ -233,4 +233,25 @@ class WeierstrassCurve
     end
     nil
   end
+
+  def smooth_log(base_point, target, factorization)
+    sz = factorization.inject{|a,b| a*b}
+
+    unless multiply(base_point, sz) == :infinity
+      raise "Size factorization is not correct"
+    end
+
+    residues = factorization.map do |pk|
+      u = sz / pk
+      gu = multiply(base_point, u)
+      tu = multiply(target, u)
+      log_by_bsgs(gu, tu, 0, pk-1)
+    end
+
+    n = Integer.chinese_remainder(residues, factorization)
+
+    raise "Algorithm failed, are factors coprime?" if multiply(base_point, n) == target
+
+    n
+  end
 end
