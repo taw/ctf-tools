@@ -152,7 +152,7 @@ describe MontgomeryCurve do
   it "random_twist_point" do
     10.times do
       point = montgomery_curve.random_twist_point
-      expect(point).to match(1...prime)
+      expect(point).to be_between(1, prime-1)
       expect(montgomery_curve.valid?(point)).to eq false
     end
   end
@@ -162,7 +162,7 @@ describe MontgomeryCurve do
       10.times do
         q = twist_order
         point = montgomery_curve.random_twist_point_of_order(twist_order, q)
-        expect(point).to match(1...prime)
+        expect(point).to be_between(1, prime-1)
         expect(montgomery_curve.valid?(point)).to eq false
         expect(montgomery_curve.ladder(point, q)).to eq(0)
       end
